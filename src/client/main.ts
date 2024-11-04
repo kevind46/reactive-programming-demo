@@ -16,3 +16,15 @@ const userMessages$ = submitEvents$.pipe(
     }),
     shareReplay()
 );
+
+userMessages$.subscribe(message => {
+    const newMessage = document.createElement("li");
+    newMessage.innerHTML = `
+        <div>
+            <p class="message-text">${message.data}</p>
+            <p class="message-date">${message.action} ${new Date(message.timestamp).toLocaleString()}</p>
+        </div>
+    `;
+    newMessage.classList.add(message.action);
+    document.getElementById("messages")!.appendChild(newMessage);
+});
