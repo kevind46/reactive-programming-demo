@@ -1,4 +1,5 @@
 import {fromEvent, map, tap, merge, shareReplay} from "rxjs";
+import {serverMessages$, sendMessage} from "./connection";
 
 const form = document.getElementById("form")!;
 const submitEvents$ = fromEvent<FormDataEvent>(form, 'submit');
@@ -17,7 +18,9 @@ const userMessages$ = submitEvents$.pipe(
     shareReplay()
 );
 
-userMessages$.subscribe(message => {
+const messages$ = merge(userMessages$, serverMessages$);
+
+messages$.subscribe(message => {
     const newMessage = document.createElement("li");
     newMessage.innerHTML = `
         <div>
@@ -27,4 +30,8 @@ userMessages$.subscribe(message => {
     `;
     newMessage.classList.add(message.action);
     document.getElementById("messages")!.appendChild(newMessage);
+});
+
+userMessages$.subscribe(message => {
+    sendMessage(message);
 });
